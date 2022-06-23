@@ -3,11 +3,12 @@ import Button from '../../Component/Button/Button';
 import Input from '../../Component/Input/Input';
 import { Link } from 'react-router-dom'
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../Config/Firebase';
+import { auth, firestore } from '../../Config/Firebase';
 import { setToken } from '../../Store/Users/UserSlice';
 import { useDispatch } from 'react-redux';
 import gsap from 'gsap';
 import './Login.css';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const Login = () => {
 
@@ -33,8 +34,11 @@ const Login = () => {
   const handleSubmit = () => {
     setLoading(true)
     signInWithEmailAndPassword(auth, email, password)
-      .then((res) => {
+      .then(async (res) => {
         dispatch(setToken(res.user.uid))
+        await updateDoc(doc(firestore, "users", res.user.uid), {
+          isOnline: true,
+        })
         setLoading(false)
       })
       .catch((err) => {

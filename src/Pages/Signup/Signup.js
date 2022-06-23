@@ -5,9 +5,8 @@ import Vector from '../../Assets/Svg/Group.svg';
 import { auth, firestore, storage } from '../../Config/Firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc, } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { useDispatch, useSelector } from 'react-redux';
-import setUsersAsync from '../../Store/Users/AsyncUser';
+import { getBytes, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import UploadImage from '../../Assets/Images/image.jpg';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Signup.css';
@@ -27,12 +26,6 @@ const Signup = () => {
   const [uploading, setUploading] = useState(false);
   const notifySuccess = () => toast.success("Account created successfully", { position: toast.POSITION.TOP_CENTER }, { autoClose: 10000 });
   const notifyError = () => toast.error("Failed to create account", { position: toast.POSITION.TOP_CENTER });
-  const state = useSelector((state) => state);
-  const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   dispatch(setUsersAsync())
-  // }, [])
 
   const createAccount = async () => {
     setCreatingAccount(true)
@@ -62,10 +55,14 @@ const Signup = () => {
       })
   }
 
-  const uploadImage = async () => {
+  const handleChange = (e) => {
+    setProfileImage(e.target.files[0])
+  }
+
+  const uploadImage = async (e) => {
     if (profileImage === null) setProfileImage("");
     setUploading(true)
-    const imageRef = ref(storage, `images/${profileImage.name}`, profileImage)
+    const imageRef = ref(storage, `images/${profileImage.name}`)
     await uploadBytesResumable(imageRef, profileImage)
       .then((res) => {
         getDownloadURL(res.ref)
@@ -84,7 +81,7 @@ const Signup = () => {
       <ToastContainer />
       <div className='vector-bg-container'>
         <div>
-          <p className='vector-title'>The best way to communicate with your <span style={{ color: "rgba(72, 150, 74, 1)" }}>friends</span></p>
+          <p className='vector-title'>The best way to communicate with your <span style={{ color: "#ecb22e" }}>friends</span></p>
         </div>
         <div className='vector-img'>
           <img src={Vector} alt="" width="300"></img>
@@ -134,12 +131,19 @@ const Signup = () => {
               <Input type="text" placeholder="Confirm Password" className="input" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             </div>
           </div>
-          <div className='input-fields-container'>
-            <div>
-              <p className='input-title'>Set Profile Image</p>
-              <Input type="file" onChange={(e) => setProfileImage(e.target.files[0])} />
-              <Button className="image-upload-btn" title={uploading ? "Uploading..." : "Upload"} disable={!profileImage} onClick={uploadImage} />
+          <div>
+            <p className='input-title'>Upload Profile Image</p>
+            <div class="avatar-upload">
+              <div class="avatar-edit">
+                <input type='file' id="imageUpload" accept="" onChange={(e) => handleChange(e)} />
+              </div>
+              <div class="avatar-preview">
+                <label for="imageUpload">
+                  <img id="imagePreview" src={profileImage ? profileImage : UploadImage} />
+                </label>
+              </div>
             </div>
+            <Button className="image-upload-btn" title={uploading ? "Uploading..." : "Upload"} disable={!profileImage} onClick={uploadImage} />
           </div>
           <div className='create-account-btn-container'>
             <Button className="create-account-btn" title={creatingAccount ? "Creating..." : "Create Your Account"} disable={!firstName || !lastName || !userName || !email || !password || !title || !mobileNumber || !confirmPassword} onClick={createAccount} />

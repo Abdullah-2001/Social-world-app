@@ -6,6 +6,7 @@ import Login from '../Pages/Login/Login';
 import Navbar from '../Component/Navbar/Navbar';
 import Profile from '../Pages/Profile/Profile';
 import { useSelector } from 'react-redux';
+import Settings from '../Pages/Settings/Settings';
 
 const RouterApp = () => {
 
@@ -16,7 +17,8 @@ const RouterApp = () => {
             <Routes>
                 <Route path='/' element={<Navbar />}>
                     <Route exact path='/' element={<PrivateRoute Component={Home} />} />
-                    <Route path='/profile/:id' element={<Profile />} />
+                    <Route path='/profile/:id' element={token ? <Profile /> : <Navigate to="/login" />} />
+                    <Route path='/settings' element={token ? <Settings /> : <Navigate to="/login" />} />
                 </Route>
                 <Route path='/login' element={!token ? <Login /> : <Navigate to="/" />} />
                 <Route path='/signup' element={!token ? <Signup /> : <Navigate to="/" />} />

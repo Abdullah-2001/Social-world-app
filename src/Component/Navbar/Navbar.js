@@ -50,7 +50,9 @@ const Navbar = () => {
                         <img className='user-image' onClick={toggleProfile} src={currentUser[0]?.profileImage}></img>
                         <div className='profile-content'>
                             <p>Profile</p>
-                            <p><Link to={`/profile/${currentUser[0]?.uid}`}>Settings</Link></p>
+                            <p>
+                                <Link to="/settings">Settings</Link>
+                            </p>
                             <p onClick={() => logout()}>Logout</p>
                         </div>
                     </div>

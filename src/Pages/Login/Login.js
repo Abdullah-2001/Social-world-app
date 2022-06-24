@@ -6,17 +6,28 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, firestore } from '../../Config/Firebase';
 import { setToken } from '../../Store/Users/UserSlice';
 import { useDispatch } from 'react-redux';
+import { doc, updateDoc } from 'firebase/firestore';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import gsap from 'gsap';
 import './Login.css';
-import { doc, updateDoc } from 'firebase/firestore';
 
 const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const TLLoader = gsap.timeline({ repeat: -1 });
+
+  const notifyError = () => {
+    toast.error(error.code, { position: toast.POSITION.TOP_CENTER });
+  }
+
+  useEffect(() => {
+    notifyError()
+  }, [error])
 
   useEffect(() => {
     TLLoader
@@ -42,40 +53,39 @@ const Login = () => {
         setLoading(false)
       })
       .catch((err) => {
-        console.log("err")
         setLoading(false)
+        setError(err)
       })
-  }
-
-  if (loading) {
-    return (
-      <div className='loader-container'>
-        <div className="loader">
-          <div className="square s1"></div>
-          <div className="square s2"></div>
-          <div className="square s3"></div>
-          <div className="square s4"></div>
-        </div>
-      </div>
-    )
   }
 
   return (
     <div className='login-form-container'>
-      <div className='login-form'>
-        <p className='singin'>Sign in</p>
-        <Input className="login-input" placeholder="Email or username" type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input className="login-input" placeholder="Password" type="text" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <Button className="login-btn" title="Sign in" onClick={handleSubmit} />
-        <div className='forgot-password-container'>
-          <a className='forgot-password' href='#'>Forgot your password?</a>
+      {loading ? (
+        <div className='loader-container'>
+          <div className="loader">
+            <div className="square s1"></div>
+            <div className="square s2"></div>
+            <div className="square s3"></div>
+            <div className="square s4"></div>
+          </div>
         </div>
-        <div className='grey-line'></div>
-        <p className='dont-have-account'>Don’t have a free account yet?</p>
-        <Link to="/signup">
-          <Button className="create-account-btn-2" title="Create your account" />
-        </Link>
-      </div>
+      ) : (
+        <div className='login-form'>
+          <ToastContainer />
+          <p className='singin'>Sign in</p>
+          <Input className="login-input" placeholder="Enter your email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input className="login-input" placeholder="Enter your password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Button className="login-btn" title="Sign in" onClick={handleSubmit} />
+          <div className='forgot-password-container'>
+            <a className='forgot-password' href='#'>Forgot your password?</a>
+          </div>
+          <div className='grey-line'></div>
+          <p className='dont-have-account'>Don’t have a free account yet?</p>
+          <Link to="/signup">
+            <Button className="create-account-btn-2" title="Create your account" />
+          </Link>
+        </div>
+      )}
     </div>
   )
 }

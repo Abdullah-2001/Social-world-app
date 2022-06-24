@@ -1,32 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import Bell from '../../Assets/Svg/bell.svg';
-import Group from '../../Assets/Svg/friends.svg';
 import Message from '../../Assets/Svg/message.svg';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { auth } from '../../Config/Firebase';
-import { setCurrentUser, setToken } from '../../Store/Users/UserSlice';
+import { auth, firestore } from '../../Config/Firebase';
+import { setToken } from '../../Store/Users/UserSlice';
 import { signOut } from 'firebase/auth';
+import { doc, updateDoc } from 'firebase/firestore';
 import './Navbar.css';
 
 const Navbar = () => {
 
-    const [open, setOpen] = useState(false)
-    const [openMessages, setOpenMessages] = useState(false)
-    const [openNotifications, setOpenNotifications] = useState(false)
     const [currentUser, setCurrentUser] = useState([])
     const state = useSelector((state) => state.users.currentUser);
     const dispatch = useDispatch()
 
-    const toggleProfile = () => setOpen(open => !open)
-    const toggleMessages = () => setOpenMessages(openMessages => !openMessages)
-    const toggleNotifications = () => setOpenNotifications(openNotifications => !openNotifications)
-
     useEffect(() => {
-        setCurrentUser(state.map(v => v))
+        setCurrentUser(state)
     }, [state])
 
-    const logout = async () => {
+    const logout = async (user) => {
+        await updateDoc(doc(firestore, "users", user.uid), {
+            isOnline: false,
+        })
         await signOut(auth)
         dispatch(setToken(null))
         dispatch(setCurrentUser(null))
@@ -39,24 +35,28 @@ const Navbar = () => {
                     <p className='logo'>Social <span>World</span> </p>
                 </div>
                 <div className='navbar-icons'>
-                    <img onClick={toggleNotifications} style={{ width: "24px" }} src={Bell}></img>
+                    <img style={{ width: "24px" }} src={Bell}></img>
                     <div className='dropdown'>
-                        <img onClick={toggleMessages} style={{ width: "24px" }} src={Message}></img>
+                        <img style={{ width: "24px" }} src={Message}></img>
                         <div className='message-content'>
-                            <p>Messgaes</p>
+                            <p>Messages</p>
                         </div>
                     </div>
-                    <div className='dropdown'>
-                        <img className='user-image' onClick={toggleProfile} src={currentUser[0]?.profileImage}></img>
-                        <div className='profile-content'>
-                            <p>Profile</p>
-                            <p>
-                                <Link to="/settings">Settings</Link>
-                            </p>
-                            <p onClick={() => logout()}>Logout</p>
-                        </div>
-                    </div>
-                    <p className='username'>{currentUser[0]?.firstName + " " + currentUser[0]?.lastName}</p>
+                    {currentUser.map((v, i) => {
+                        return (
+                            <>
+                                <div className='dropdown'>
+                                    <img className='user-image' src={v.profileImage}></img>
+                                    <div className='profile-content'>
+                                        <p>Settings</p>
+                                        <Link to={`profile/${v.uid}`}><p>Profile</p></Link>
+                                        <p onClick={() => logout(v)}>Logout</p>
+                                    </div>
+                                </div>
+                                <p className='username'>{v.firstName + " " + v.lastName}</p>
+                            </>
+                        )
+                    })}
                 </div>
             </div>
             <Outlet />

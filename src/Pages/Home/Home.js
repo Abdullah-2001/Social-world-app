@@ -2,7 +2,10 @@ import React, { useEffect } from 'react';
 import gsap from 'gsap';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentUserAsync } from '../../Store/Users/AsyncUser';
-import './Home.css'
+import Sidebar from '../../Component/Sidebar/Sidebar';
+import Card from '../../Component/Card/Card';
+import { NavLink } from 'react-router-dom';
+import './Home.css';
 
 const Home = () => {
 
@@ -24,7 +27,7 @@ const Home = () => {
       .to('.loader .square', { borderRadius: 0, duration: 0.5 }, '-=0.5')
   }, [])
 
-  const isLoading = true;
+  const isLoading = false;
 
   useEffect(() => {
     dispatch(setCurrentUserAsync())
@@ -42,9 +45,31 @@ const Home = () => {
           </div>
         </div>
       ) : (
-        <h1>Home</h1>
+        <div className='home-content-container'>
+          <Sidebar className="home-sidebar-menu">
+            <div className='sidebar-links'>
+              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/">Home</NavLink>
+              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/friends">Friends</NavLink>
+              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/photos">Photos</NavLink>
+              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/videos">Videos</NavLink>
+              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/marketplace">Marketplace</NavLink>
+              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/feeds" >Feeds</NavLink>
+            </div>
+          </Sidebar>
+          <div>
+            <Card className="post-card">
+              <h1>Card</h1>
+            </Card>
+            <Card className="post-card">
+              <h1>Card</h1>
+            </Card>
+          </div>
+          <Sidebar className="chat-sidebar">
+            <h1>Friends</h1>
+          </Sidebar>
+        </div>
       )}
-    </div>
+    </div >
   )
 }
 

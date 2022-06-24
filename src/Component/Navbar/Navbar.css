@@ -84,4 +84,5 @@
     object-fit: cover;
     border-radius: 50%;
     cursor: pointer;
+    border: 3px solid #48964A;
 }

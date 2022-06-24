@@ -13,9 +13,14 @@
     grid-template-columns: 1fr 1fr;
     grid-gap: 5px;
     position: relative;
-
 }
 
 .loader .square {
     background-color: #000;
+}
+
+.home-content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }

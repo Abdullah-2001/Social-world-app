@@ -1,7 +1,7 @@
 import React from 'react';
-import './Card.css';
+import './Sidebar.css';
 
-const Card = ({ className, children }) => {
+const Sidebar = ({ className , children }) => {
   return (
     <div className={className}>
       {children}
@@ -9,4 +9,4 @@ const Card = ({ className, children }) => {
   )
 }
 
-export default Card;
+export default Sidebar;

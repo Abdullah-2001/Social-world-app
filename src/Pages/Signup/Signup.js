@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '../../Component/Button/Button';
 import Input from '../../Component/Input/Input';
 import Vector from '../../Assets/Svg/Group.svg';
 import { auth, firestore, storage } from '../../Config/Firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc, } from 'firebase/firestore';
-import { getBytes, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import UploadImage from '../../Assets/Images/image.jpg';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

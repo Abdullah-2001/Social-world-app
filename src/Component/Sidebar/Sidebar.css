@@ -1,4 +1,4 @@
-.home-sidebar-menu {
+.menu-sidebar {
     box-shadow: 0 4px 8px 0 rgb(156 155 155 / 20%);
     width: 250px;
     height: 100vh;
@@ -6,7 +6,9 @@
 
 .chat-sidebar {
     box-shadow: 0 4px 8px 0 rgb(156 155 155 / 20%);
-    width: 300px;
+    width: 250px;
+    height: 100vh;
+    padding: 0 30px;
 }
 
 .sidebar-links {

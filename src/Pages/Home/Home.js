@@ -1,18 +1,21 @@
-import React, { useEffect } from 'react';
-import gsap from 'gsap';
-import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentUserAsync } from '../../Store/Users/AsyncUser';
+import React, { useEffect, useState } from 'react';
+import { CurrentUserContext } from '../../Config/UserContext';
+import { NavLink } from 'react-router-dom';
+import { PostModal } from '../../Component/Modal/Modal';
+import { useSelector } from 'react-redux';
 import Sidebar from '../../Component/Sidebar/Sidebar';
 import Card from '../../Component/Card/Card';
-import { NavLink } from 'react-router-dom';
+import moment from 'moment';
+import gsap from 'gsap';
 import './Home.css';
 
 const Home = () => {
 
-  const dispatch = useDispatch();
-  const state = useSelector((state) => state)
-  console.log(state);
+  const { currentUser } = CurrentUserContext()
+  const load = useSelector((state) => state)
+  const [modal, setModal] = useState(false)
   const TLLoader = gsap.timeline({ repeat: -1 });
+  let date = new Date()
 
   useEffect(() => {
     TLLoader
@@ -27,49 +30,64 @@ const Home = () => {
       .to('.loader .square', { borderRadius: 0, duration: 0.5 }, '-=0.5')
   }, [])
 
-  const isLoading = false;
-
-  useEffect(() => {
-    dispatch(setCurrentUserAsync())
-  }, [])
+  const open = () => setModal(true)
+  const close = () => setModal(false)
+  let loading = false;
 
   return (
     <div>
-      {isLoading ? (
-        <div className='loader-container'>
-          <div className="loader">
-            <div className="square s1"></div>
-            <div className="square s2"></div>
-            <div className="square s3"></div>
-            <div className="square s4"></div>
+      {modal &&
+        <PostModal style="postModal" modal={modal} setModal={setModal} open={open} close={close}>
+          <p>Create post</p>
+          <div></div>
+        </PostModal>
+      }
+      <div className='home-content-container'>
+        <Sidebar className="menu-sidebar">
+          <div className='sidebar-links'>
+            <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/">Home</NavLink>
+            <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/friends">Friends</NavLink>
+            <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/photos">Photos</NavLink>
+            <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/videos">Videos</NavLink>
+            <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/marketplace">Marketplace</NavLink>
+            <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/feeds" >Feeds</NavLink>
           </div>
-        </div>
-      ) : (
-        <div className='home-content-container'>
-          <Sidebar className="home-sidebar-menu">
-            <div className='sidebar-links'>
-              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/">Home</NavLink>
-              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/friends">Friends</NavLink>
-              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/photos">Photos</NavLink>
-              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/videos">Videos</NavLink>
-              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/marketplace">Marketplace</NavLink>
-              <NavLink className={({ isActive }) => isActive ? "activeClassName" : ""} to="/feeds" >Feeds</NavLink>
+        </Sidebar>
+        <div>
+          {loading ? (
+            <div className='loader-container'>
+              <div className="loader">
+                <div className="square s1"></div>
+                <div className="square s2"></div>
+                <div className="square s3"></div>
+                <div className="square s4"></div>
+              </div>
             </div>
-          </Sidebar>
-          <div>
+          ) : (
             <Card className="post-card">
-              <h1>Card</h1>
+              {currentUser?.map(v => {
+                return (
+                  <>
+                    <div>
+                      <img className='post-user-img' src={v.profileImage}></img>
+                    </div>
+                    <div onClick={open} className='open-modal'>
+                      <p>What is in your mind ? {v.firstName} </p>
+                    </div>
+                  </>
+                )
+              })}
             </Card>
-            <Card className="post-card">
+          )}
+          {/* <Card className="post-card">
               <h1>Card</h1>
-            </Card>
-          </div>
-          <Sidebar className="chat-sidebar">
-            <h1>Friends</h1>
-          </Sidebar>
+            </Card> */}
         </div>
-      )}
-    </div >
+        <Sidebar className="chat-sidebar">
+          <p className='friends'>Friends</p>
+        </Sidebar>
+      </div>
+    </div>
   )
 }
 

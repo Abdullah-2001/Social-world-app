@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Bell from '../../Assets/Svg/bell.svg';
 import Message from '../../Assets/Svg/message.svg';
 import { Link, Outlet } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { auth, firestore } from '../../Config/Firebase';
-import { setToken } from '../../Store/Users/UserSlice';
+import { setCurrentUser, setToken } from '../../Store/Users/UserSlice';
 import { signOut } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
+import { CurrentUserContext } from '../../Config/UserContext';
 import './Navbar.css';
 
 const Navbar = () => {
 
-    const [currentUser, setCurrentUser] = useState([])
-    const state = useSelector((state) => state.users.currentUser);
+    const { currentUser } = CurrentUserContext()
     const dispatch = useDispatch()
-
-    useEffect(() => {
-        setCurrentUser(state)
-    }, [state])
 
     const logout = async (user) => {
         await updateDoc(doc(firestore, "users", user.uid), {
@@ -42,7 +38,7 @@ const Navbar = () => {
                             <p>Messages</p>
                         </div>
                     </div>
-                    {currentUser.map((v, i) => {
+                    {currentUser?.map((v, i) => {
                         return (
                             <>
                                 <div className='dropdown'>
